@@ -3,9 +3,10 @@ import axios from "axios";
 
 class App extends Component {
   state = {
-    client: null,
-    GoogleAuth: null,
-    access_token: null,
+    loadingEvent: false,
+    loadingBusy: false,
+    userEvents: null,
+    userBusy: null,
   };
 
   // api = axios.create({
@@ -46,185 +47,232 @@ class App extends Component {
 
   SCOPES = "https://www.googleapis.com/auth/calendar.events";
 
-  componentDidMount() {
-    this.gapi?.load("client:auth2", () => {
-      console.log("gapi loaded");
-      // console.log(gapi.client.getToken);
-    });
-  }
+  // componentDidMount() {
+  //   this.gapi?.load("client:auth2", () => {
+  //     console.log("gapi loaded");
+  //   });
+  // }
 
-  authorize = () => {
-    // console.log(this.gapi);
-    if (!this.gapi) return;
-    // this.gapi?.client.load("calendar", "v3", () => console.log("calendar"));
-    // var tempGauth = this.gapi?.auth2.getAuthInstance();
+  // authorize = () => {
+  //   // console.log(this.gapi);
+  //   if (!this.gapi) return;
+  //   // this.gapi?.client.load("calendar", "v3", () => console.log("calendar"));
+  //   // var tempGauth = this.gapi?.auth2.getAuthInstance();
 
-    // tempGauth.signIn().then(() => {
-    //   console.log({ ...this.gapi.client });
-    //   this.setState({ client: this.gapi.client, GoogleAuth: tempGauth });
-    // });
+  //   // tempGauth.signIn().then(() => {
+  //   //   console.log({ ...this.gapi.client });
+  //   //   this.setState({ client: this.gapi.client, GoogleAuth: tempGauth });
+  //   // });
 
-    //     access_type=offline&
-    //  include_granted_scopes=true&
-    //  response_type=code&
-    //  state=state_parameter_passthrough_value&
-    //  redirect_uri=https%3A//oauth2.example.com/code&
-    //  client_id=client_id
+  //   //     access_type=offline&
+  //   //  include_granted_scopes=true&
+  //   //  response_type=code&
+  //   //  state=state_parameter_passthrough_value&
+  //   //  redirect_uri=https%3A//oauth2.example.com/code&
+  //   //  client_id=client_id
 
-    this.gapi.auth2.authorize(
-      {
-        client_id: this.CLIENT_ID,
-        scope: this.SCOPES,
-        response_type: "code",
-        access_type: "offline",
-        redirect_uri: "http://192.168.0.106.nip.io:4000",
-        // prompt: "consent",
-      },
-      (response) => {
-        if (response.error) {
-          // An error happened!
-          return;
-        }
-        // The user authorized the application for the scopes requested.
-        var accessToken = response.access_token;
-        // var idToken = response.id_token;
-        console.log(response);
-        // You can also now use gapi.client to perform authenticated requests.
-        console.log(this.gapi.client);
-        this.gapi?.client.load("calendar", "v3", () => console.log("calendar"));
-        this.setState({
-          client: this.gapi.client,
-          access_token: accessToken,
-        });
-      }
-    );
-  };
+  //   this.gapi.auth2.authorize(
+  //     {
+  //       client_id: this.CLIENT_ID,
+  //       scope: this.SCOPES,
+  //       response_type: "code",
+  //       access_type: "offline",
+  //       redirect_uri: "http://192.168.0.106.nip.io:4000",
+  //       // prompt: "consent",
+  //     },
+  //     (response) => {
+  //       if (response.error) {
+  //         // An error happened!
+  //         return;
+  //       }
+  //       // The user authorized the application for the scopes requested.
+  //       var accessToken = response.access_token;
+  //       // var idToken = response.id_token;
+  //       console.log(response);
+  //       // You can also now use gapi.client to perform authenticated requests.
+  //       console.log(this.gapi.client);
+  //       this.gapi?.client.load("calendar", "v3", () => console.log("calendar"));
+  //       this.setState({
+  //         client: this.gapi.client,
+  //         access_token: accessToken,
+  //       });
+  //     }
+  //   );
+  // };
 
-  getCode = () => {
-    let str = this.props.location.search;
-    let fields = str.substring(1, str.length).split("&");
-    let code = fields[0].split("=")[1];
-    console.log(code);
+  // getCode = () => {
+  //   let str = this.props.location.search;
+  //   let fields = str.substring(1, str.length).split("&");
+  //   let code = fields[0].split("=")[1];
+  //   console.log(code);
+  //   axios
+  //     .post("https://jsonplaceholder.typicode.com/posts", {
+  //       title: "foo",
+  //       body: "bar",
+  //       userId: 1,
+  //     })
+  //     .then((res) => console.log(res))
+  //     .catch((error) => {
+  //       if (error.response) {
+  //         //do something
+  //         console.log(error.response);
+  //       } else if (error.request) {
+  //         //do something else
+  //         console.log(error.request);
+  //       } else if (error.message) {
+  //         //do something other than the other two
+  //         console.log(error.message);
+  //       }
+  //     });
+  // };
+
+  // getData = () => {
+  // console.log(this.state.client);
+  // console.log(
+  //   this.state.GoogleAuth.currentUser.get().getBasicProfile().getEmail()
+  // );
+  // this.state.client.calendar.events
+  //   .list({
+  //     calendarId: "primary", // can pass many params for query
+  //   })
+  //   .then((res) => {
+  //     console.log(res.result.items);
+  //   });
+  // axios
+  //   .get("https://www.googleapis.com/calendar/v3/primary/events/", {
+  //     params: { access_token: this.state.access_token },
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //   })
+  //   .then((res) => {
+  //     console.log(res);
+  //   });
+  //   console.log({ ...this.gapi.client.setToken() });
+  // };
+
+  // insertEvent = () => {
+  //   var request = this.gapi.client.calendar.events.insert({
+  //     calendarId: "primary",
+  //     resource: this.testEvent,
+  //   });
+
+  //   request.execute((event) => {
+  //     console.log(event);
+  //     window.open(event.htmlLink);
+  //   });
+  // };
+
+  getUserEventData = () => {
+    this.setState({ loadingEvent: true });
     axios
-      .post("https://jsonplaceholder.typicode.com/posts", {
-        title: "foo",
-        body: "bar",
-        userId: 1,
+      .get("http://192.168.0.106.nip.io:4000/event-list")
+      .then((res) => {
+        console.log(res);
+        this.setState({
+          loadingEvent: false,
+          userEvents: res.data.items,
+        });
       })
-      .then((res) => console.log(res))
-      .catch((error) => {
-        if (error.response) {
-          //do something
-          console.log(error.response);
-        } else if (error.request) {
-          //do something else
-          console.log(error.request);
-        } else if (error.message) {
-          //do something other than the other two
-          console.log(error.message);
-        }
+      .catch((err) => {
+        console.log(err.message);
+        this.setState({
+          loadingEvent: false,
+        });
       });
   };
 
-  getData = () => {
-    // console.log(this.state.client);
-    // console.log(
-    //   this.state.GoogleAuth.currentUser.get().getBasicProfile().getEmail()
-    // );
-    // this.state.client.calendar.events
-    //   .list({
-    //     calendarId: "primary", // can pass many params for query
-    //   })
-    //   .then((res) => {
-    //     console.log(res.result.items);
-    //   });
-    // axios
-    //   .get("https://www.googleapis.com/calendar/v3/primary/events/", {
-    //     params: { access_token: this.state.access_token },
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //   })
-    //   .then((res) => {
-    //     console.log(res);
-    //   });
-    console.log({ ...this.gapi.client.setToken() });
-  };
-
-  insertEvent = () => {
-    var request = this.gapi.client.calendar.events.insert({
-      calendarId: "primary",
-      resource: this.testEvent,
-    });
-
-    request.execute((event) => {
-      console.log(event);
-      window.open(event.htmlLink);
-    });
+  getUserBusyData = () => {
+    this.setState({ loadingBusy: true });
+    axios
+      .get("http://192.168.0.106.nip.io:4000/busy")
+      .then((res) => {
+        console.log(res);
+        this.setState({
+          loadingBusy: false,
+          userBusy: res.data,
+        });
+      })
+      .catch((err) => {
+        console.log(err.message);
+        this.setState({
+          loadingBusy: false,
+        });
+      });
   };
 
   render() {
     return (
       <>
-        {/* Sign In Handle */}
-        <div style={{ textAlign: "center", fontSize: "2rem" }}>
-          {/* {this.state.GoogleAuth !== null && (
-            <span>
-              {this.state.GoogleAuth.currentUser
-                .get()
-                .getBasicProfile()
-                .getEmail()}
-            </span>
-          )} */}
-          <button
-            onClick={this.authorize}
-            style={{ fontSize: "2rem", margin: "3rem", padding: "1rem" }}
-          >
-            Add Account
-          </button>
+        {/* Event data container */}
+        <div className="container " style={{ marginTop: "2rem" }}>
+          {this.state.userEvents !== null ? (
+            <table class="table table-striped text-center">
+              <thead>
+                <tr>
+                  <th scope="col">Events</th>
+                </tr>
+              </thead>
+              <tbody>
+                {this.state.userEvents.map((event) => (
+                  <tr>
+                    <td>{JSON.stringify(event)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <div class="alert alert-info text-center" role="alert">
+              Event Data Will Be Shown Here
+            </div>
+          )}
+
+          <div style={{ textAlign: "center" }}>
+            <button
+              className="btn btn-primary"
+              disabled={this.state.loadingEvent}
+              onClick={this.getUserEventData}
+              style={{ fontSize: "2rem", margin: "1rem", padding: "1rem" }}
+            >
+              Get Event Data
+            </button>
+          </div>
         </div>
 
-        {/* Get Events From Calendar */}
-        <div style={{ textAlign: "center" }}>
-          <button
-            disabled={this.state.client === null}
-            onClick={this.getData}
-            style={{ fontSize: "2rem", margin: "1rem", padding: "1rem" }}
-          >
-            Get Data
-          </button>
+        {/* busy data container */}
+        <div className="container " style={{ marginTop: "2rem" }}>
+          {this.state.userBusy !== null ? (
+            <table class="table table-striped text-center">
+              <thead>
+                <tr>
+                  <th scope="col">Events</th>
+                </tr>
+              </thead>
+              <tbody>
+                {this.state.userBusy.map((event) => (
+                  <tr>
+                    <td>{JSON.stringify(event)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <div class="alert alert-info text-center" role="alert">
+              Busy Data Will Be Shown Here
+            </div>
+          )}
+
+          <div style={{ textAlign: "center" }}>
+            <button
+              className="btn btn-primary"
+              disabled={this.state.loadingBusy}
+              onClick={this.getUserBusyData}
+              style={{ fontSize: "2rem", margin: "1rem", padding: "1rem" }}
+            >
+              Get Busy Data
+            </button>
+          </div>
         </div>
-
-        {/* Insert Event in Calendar */}
-        <div style={{ textAlign: "center" }}>
-          <button
-            disabled={this.state.client === null}
-            onClick={this.insertEvent}
-            style={{ fontSize: "2rem", margin: "1rem", padding: "1rem" }}
-          >
-            Insert Event
-          </button>
-        </div>
-
-        <div style={{ margin: "2rem", fontSize: "1.2rem" }}>
-          <b>Event details:</b>
-          <br />
-          {JSON.stringify(this.testEvent)}
-        </div>
-
-        <button onClick={this.getCode}>Code</button>
-
-        <a
-          href={
-            "https://accounts.google.com/o/oauth2/v2/auth?scope=" +
-            this.SCOPES +
-            "&access_type=offline&include_granted_scopes=true&response_type=code&redirect_uri=http://192.168.0.106.nip.io:4000&client_id=" +
-            this.CLIENT_ID +
-            "&prompt=consent"
-          }
-        >
-          Authorize
-        </a>
       </>
     );
   }

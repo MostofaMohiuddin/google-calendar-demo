@@ -4,12 +4,14 @@ import "./index.css";
 import App from "./App";
 import { Route, BrowserRouter as Router } from "react-router-dom";
 import Auth from "./Auth";
+import Admin from "./Admin";
 
 ReactDOM.render(
   <React.StrictMode>
     <Router>
       <Route exact path="/" component={App}></Route>
       <Route exact path="/auth" component={Auth}></Route>
+      <Route exact path="/admin" component={Admin}></Route>
     </Router>
   </React.StrictMode>,
   document.getElementById("root")
