@@ -2,10 +2,15 @@ import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
+import { Route, BrowserRouter as Router } from "react-router-dom";
+import Auth from "./Auth";
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <Router>
+      <Route exact path="/" component={App}></Route>
+      <Route exact path="/auth" component={Auth}></Route>
+    </Router>
   </React.StrictMode>,
   document.getElementById("root")
 );
